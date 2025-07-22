@@ -23,6 +23,19 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
+.btn{
+  padding: 10px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-size: large;
+  border:none;
+}
+.btn:hover{
+  background-color: black;
+  color: aliceblue;
+}
+
 
 .App-link {
   color: #61dafb;
