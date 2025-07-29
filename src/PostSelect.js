@@ -9,6 +9,7 @@ import {
   Stack,
   Paper
 } from '@mui/material';
+import './index.css';
 import { styled } from '@mui/material/styles';
 import Header from './header';
 import Footer from './footer';
@@ -24,7 +25,7 @@ const BackgroundWrapper = styled(Box)(({ theme }) => ({
   minHeight: '100vh',
   display: 'flex',
   flexDirection: 'column',
-  background: 'linear-gradient(to bottom right, #fef3c7, #fdba74, #fca5a5)',
+  background: 'transparent',
 }));
 
 const ContentWrapper = styled(Container)(({ theme }) => ({

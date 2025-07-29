@@ -11,6 +11,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from '@mui/material';
+import './index.css';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Header from './header';
 import Footer from './footer';
@@ -26,7 +27,7 @@ const BackgroundWrapper = styled(Box)(({ theme }) => ({
   minHeight: '100vh',
   display: 'flex',
   flexDirection: 'column',
-  background: 'linear-gradient(to bottom right, #ffe082, #ff7043, #ff8a65)',
+  background: 'transparent',
 }));
 
 const ContentWrapper = styled(Container)(({ theme }) => ({

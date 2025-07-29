@@ -17,6 +17,7 @@ import {
   TableRow,
   TableBody,
 } from '@mui/material';
+import './index.css';
 import { styled } from '@mui/material/styles';
 import lostImage from './assets/lost.png';
 
@@ -24,7 +25,7 @@ const GradientBackground = styled(Box)(({ theme }) => ({
   minHeight: '100vh',
   display: 'flex',
   flexDirection: 'column',
-  background: 'linear-gradient(to bottom right, #ffe082, #ff7043, #ff8a65)',
+  background: 'transparent',
 }));
 
 const MainContent = styled(Box)(({ theme }) => ({

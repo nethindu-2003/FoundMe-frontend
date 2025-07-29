@@ -11,6 +11,7 @@ import {
   Snackbar,
   Alert,
 } from '@mui/material';
+import './index.css';
 import { styled } from '@mui/material/styles';
 import Footer from './footer';
 import logo from './assets/logo.png';
@@ -19,7 +20,7 @@ const BackgroundWrapper = styled(Box)(({ theme }) => ({
   minHeight: '100vh',
   display: 'flex',
   flexDirection: 'column',
-  background: 'linear-gradient(to bottom right, #ffe082, #ff7043, #ff8a65)',
+  background: 'transparent',
 }));
 
 const LoginContainer = styled(Box)(({ theme }) => ({

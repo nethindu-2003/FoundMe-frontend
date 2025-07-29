@@ -5,6 +5,7 @@ import Footer from './footer';
 import { Box, Button, Stack, Typography, Container, Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Lottie from 'lottie-react';
+import './index.css';
 import animationData from './assets/lost-found-anim.json';
 import logo from './assets/logo.png';
 
@@ -12,7 +13,7 @@ const GradientBackground = styled(Box)(({ theme }) => ({
   minHeight: '100vh',
   display: 'flex',
   flexDirection: 'column',
-  background: 'linear-gradient(to bottom right, #ffe082, #ff7043, #ff8a65)',
+  background: 'transparent',
 }));
 
 const CenterContent = styled(Container)(({ theme }) => ({

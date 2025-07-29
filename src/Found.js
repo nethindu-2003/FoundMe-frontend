@@ -11,6 +11,7 @@ import {
   Snackbar, 
   Alert,
 } from '@mui/material';
+import './index.css';
 import { styled } from '@mui/material/styles';
 import Header from './header';
 import Footer from './footer';
@@ -21,7 +22,7 @@ const BackgroundWrapper = styled(Box)(({ theme }) => ({
   minHeight: '100vh',
   display: 'flex',
   flexDirection: 'column',
-  background: 'linear-gradient(to bottom right, #fef3c7, #fdba74, #fca5a5)',
+  background: 'transparent',
 }));
 
 const PageContainer = styled(Box)(({ theme }) => ({
@@ -70,7 +71,14 @@ const Found = () => {
 
     if (loading) return;
     setLoading(true);
-    axios.post('http://localhost:3001/api/found/found',{founditem,founddatetime,foundlocation,findercontact,founddescription})
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user || !user.username) {
+      console.error("User not found or invalid in localStorage");
+      return;
+    }
+
+    axios.post('http://localhost:3001/api/found/found',{founditem,founddatetime,foundlocation,findercontact,founddescription,username: user.username,})
     .then(result => {
       console.log(result)
       // Clear inputs

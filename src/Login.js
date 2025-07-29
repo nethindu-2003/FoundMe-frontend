@@ -13,6 +13,7 @@ import {
   Snackbar,
   Alert,
 } from '@mui/material';
+import './index.css';
 import { styled } from '@mui/material/styles';
 import logo from './assets/logo.png';
 import Footer from './footer';
@@ -21,7 +22,7 @@ const GradientBackground = styled(Box)(({ theme }) => ({
   minHeight: '100vh',
   display: 'flex',
   flexDirection: 'column',
-  background: 'linear-gradient(to bottom right, #ffe082, #ff7043, #ff8a65)',
+  background: 'transparent',
 }));
 
 const CenterContent = styled(Container)(({ theme }) => ({
@@ -80,6 +81,7 @@ const Login = () => {
           setErrorMsg('');
           setOpenSnackbar(true);
           localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('user', JSON.stringify(res.data.user));
           navigate('/homepage');
         }
       })
