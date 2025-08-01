@@ -13,13 +13,14 @@ import {
   Link,
   FormLabel,
   Snackbar,
+  Dialog, DialogTitle, DialogContent, DialogActions,
   Alert,
 } from '@mui/material';
 import './index.css';
 import { styled } from '@mui/material/styles';
 import Footer from './footer';
-import axios from 'axios';
 import logo from './assets/logo.png';
+import { signup } from './services/authService';
 
 const GradientBackground = styled(Box)(({ theme }) => ({
   minHeight: '100vh',
@@ -72,10 +73,13 @@ const Signup = () => {
   const [gender, setGender] = useState('');
   const [birthday, setBirthday] = useState('');
   const [phonenumber, setPhonenumber] = useState('');
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogMsg, setDialogMsg] = useState('');
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const phonePattern = /^\d{10}$/;
@@ -93,36 +97,31 @@ const Signup = () => {
       return;
     }
 
-    axios
-      .post('http://localhost:3001/api/users/signup', {
-        name,
-        gender,
-        birthday,
-        phonenumber,
-        username,
-        password,
-      })
-      .then((result) => {
-        console.log('Server Response:', result.data);
-        setName('');
-        setGender('');
-        setBirthday('');
-        setPhonenumber('');
-        setUsername('');
-        setPassword('');
-        itemRef.current.focus();
-        setOpenSnackbar(true);
-        navigate('/login');
-      })
-      .catch((err) => {
-        if (err.response && err.response.status === 400) {
-          alert(err.response.data.error);
-        } else {
-          console.error('Signup failed:', err);
-          alert('Something went wrong. Please try again.');
-        }
-      });
+    try {
+      await signup({ name, gender, birthday, phonenumber, email, password });
+      // Clear form
+      setName('');
+      setGender('');
+      setBirthday('');
+      setPhonenumber('');
+      setEmail('');
+      setPassword('');
+      itemRef.current?.focus();
+
+      // Show dialog
+      setDialogMsg('Your account has been created. Please check your email and click the verification link to activate your account.');
+      setDialogOpen(true);
+    } catch (err) {
+      const message = err.response?.data?.message || 'Signup failed';
+      alert(message);
+    }
   };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    navigate('/login');
+  };
+
 
   return (
     <GradientBackground>
@@ -183,12 +182,12 @@ const Signup = () => {
                 onChange={(e) => setPhonenumber(e.target.value)}
               />
               <TextField
-                label="Username"
-                name="username"
+                label="Email"
+                name="email"
                 fullWidth
                 required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <TextField
                 label="Password"
@@ -220,6 +219,18 @@ const Signup = () => {
       </CenterContent>
 
       <Footer />
+
+      <Dialog open={dialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>Email Verification Required</DialogTitle>
+        <DialogContent>
+          <Alert severity="info" sx={{ mt: 1, mb: 2 }}>{dialogMsg}</Alert>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary" variant="contained">
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar
         open={openSnackbar}

@@ -78,7 +78,7 @@ const UpdateDialog = ({ editItem, setEditItem, dialogOpen, setDialogOpen, type, 
       }}
     >
       <DialogTitle sx={{ fontWeight: 600, textAlign: 'center', pb: 0 }}>
-        ✏️ Update {type === 'lost' ? 'Lost' : 'Found'} Item
+         Update {type === 'lost' ? 'Lost' : 'Found'} Item
       </DialogTitle>
 
       <DialogContent dividers sx={{ mt: 1 }}>

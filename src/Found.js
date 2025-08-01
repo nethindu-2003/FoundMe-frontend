@@ -73,12 +73,12 @@ const Found = () => {
     setLoading(true);
 
     const user = JSON.parse(localStorage.getItem('user'));
-    if (!user || !user.username) {
+    if (!user || !user.email) {
       console.error("User not found or invalid in localStorage");
       return;
     }
 
-    axios.post('http://localhost:3001/api/found/found',{founditem,founddatetime,foundlocation,findercontact,founddescription,username: user.username,})
+    axios.post('http://localhost:3001/api/found/found',{founditem,founddatetime,foundlocation,findercontact,founddescription,email: user.email,})
     .then(result => {
       console.log(result)
       // Clear inputs

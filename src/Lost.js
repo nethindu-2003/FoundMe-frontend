@@ -76,7 +76,7 @@ const Lost = () => {
     if (loading) return;
     setLoading(true);
     const user = JSON.parse(localStorage.getItem('user'));
-    if (!user || !user.username) {
+    if (!user || !user.email) {
       console.error("User not found or invalid in localStorage");
       return;
     }
@@ -88,7 +88,7 @@ const Lost = () => {
         ownername,
         ownerphonenumber,
         lostdescription,
-        username: user.username,
+        email: user.email,
       })
       .then((result) => {
         setLostitem('');

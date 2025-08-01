@@ -323,8 +323,8 @@ const NavButton = styled(Button)(({ theme }) => ({
   const openUserProfile = async (user) => {
   try {
     const [lostRes, foundRes] = await Promise.all([
-      axios.get(`http://localhost:3001/api/lost?username=${user.username}`),
-      axios.get(`http://localhost:3001/api/found?username=${user.username}`)
+      axios.get(`http://localhost:3001/api/lost?email=${user.email}`),
+      axios.get(`http://localhost:3001/api/found?email=${user.email}`)
     ]);
 
     const extendedUser = {
@@ -503,7 +503,7 @@ const NavButton = styled(Button)(({ theme }) => ({
               <StyledTableHead>
                 <TableRow>
                   <TableCell>Name</TableCell>
-                  <TableCell>Username</TableCell>
+                  <TableCell>Email</TableCell>
                   <TableCell>Role</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Action</TableCell>
@@ -513,7 +513,7 @@ const NavButton = styled(Button)(({ theme }) => ({
                 {users.map(user => (
                   <TableRow key={user._id}>
                     <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.username}</TableCell>
+                    <TableCell>{user.email}</TableCell>
                     <TableCell>{user.role}</TableCell>
                     <TableCell>
                       <Chip label={user.isBanned ? "Banned" : "Active"} color={user.isBanned ? "error" : "success"} size="small" />
@@ -648,7 +648,7 @@ const NavButton = styled(Button)(({ theme }) => ({
         <DialogContent dividers>
           {/* Basic Details */}
           <Box mb={2} sx={{ p: 2, backgroundColor: '#f1f5f9', borderRadius: 2 }}>
-            <Typography><strong>Username:</strong> {selectedUser.username}</Typography>
+            <Typography><strong>Email:</strong> {selectedUser.email}</Typography>
             <Typography><strong>Phone Number:</strong> {selectedUser.phonenumber || 'N/A'}</Typography>
             <Typography><strong>Role:</strong> {selectedUser.role}</Typography>
             <Typography>

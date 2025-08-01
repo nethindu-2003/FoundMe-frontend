@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -11,12 +11,16 @@ import {
   Stack,
   Link,
   Snackbar,
+  Dialog, DialogTitle, DialogContent,
+  DialogActions,
   Alert,
 } from '@mui/material';
 import './index.css';
 import { styled } from '@mui/material/styles';
 import logo from './assets/logo.png';
 import Footer from './footer';
+import { forgotPassword, resetPassword } from './services/authService';
+
 
 const GradientBackground = styled(Box)(({ theme }) => ({
   minHeight: '100vh',
@@ -65,17 +69,47 @@ const FooterWrapper = styled(Box)(({ theme }) => ({
 }));
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [forgotOpen, setForgotOpen] = useState(false);
+  const [step, setStep] = useState(1);
+  const [tokenConfirmed, setTokenConfirmed] = useState(false);
+  const [rePassword, setRePassword] = useState('');
+  const [resetToken, setResetToken] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [message, setMessage] = useState('');
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const verified = queryParams.get('verified');
+  const [verifyMsg, setVerifyMsg] = useState(
+    verified === 'success' ? 'Your email has been verified!' :
+    verified === 'fail' ? 'Invalid or expired verification link.' :
+    verified === 'error' ? 'Server error during verification.' :
+    ''
+  );
+  
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const tokenFromUrl = queryParams.get('resetToken');
+    if (tokenFromUrl) {
+      setResetToken(tokenFromUrl);
+      setForgotOpen(true);
+      setStep(3);
+      setTokenConfirmed(true);
+      const newUrl = location.pathname;
+      window.history.replaceState(null, '', newUrl);
+    }
+  }, [location]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     axios
-      .post('http://localhost:3001/api/users/login', { username, password })
+      .post('http://localhost:3001/api/users/login', { email, password })
       .then((res) => {
         if (res.data.success) {
           setErrorMsg('');
@@ -90,9 +124,53 @@ const Login = () => {
         setOpenSnackbar(true);
       });
   };
+  const handleForgot = async () => {
+    try {
+      await forgotPassword(email);
+      setMessage('Reset link sent to email. Use the token from email to confirm.');
+      setStep(2);
+    } catch (err) {
+      setMessage(err.response?.data?.message || 'Error sending reset link');
+    }
+  };
+
+  const handleConfirm = () => {
+    if (!resetToken) return setMessage("Enter token to proceed");
+    setTokenConfirmed(true);
+    setStep(3);
+  };
+
+  const handleReset = async () => {
+    if (password !== rePassword) return setMessage("Passwords don't match");
+
+    try {
+      await resetPassword(resetToken, password);
+      setMessage('Password reset successful!');
+      setTimeout(() => {
+        setForgotOpen(false);
+        setStep(1);
+        setEmail('');
+        setPassword('');
+        setRePassword('');
+        setResetToken('');
+        setTokenConfirmed(false);
+      }, 2000);
+    } catch (err) {
+      setMessage(err.response?.data?.message || 'Reset failed');
+    }
+  };
 
   return (
     <GradientBackground>
+      {verifyMsg && (
+        <Alert
+          severity={verified === 'success' ? 'success' : 'error'}
+          onClose={() => setVerifyMsg('')}
+          sx={{ mb: 2 }}
+        >
+          {verifyMsg}
+        </Alert>
+      )}
       <CenterContent>
         <LoginCard elevation={5}>
           <LogoImage src={logo} alt="Site Logo" />
@@ -102,11 +180,11 @@ const Login = () => {
           <form onSubmit={handleSubmit}>
             <Stack spacing={3}>
               <TextField
-                label="Username"
+                label="Email"
                 variant="outlined"
                 fullWidth
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
               <TextField
@@ -121,6 +199,67 @@ const Login = () => {
               <StyledButton type="submit" variant="contained" color="error">
                 Login
               </StyledButton>
+              <Typography sx={{ mt: 1, cursor: 'pointer' }} onClick={() => setForgotOpen(true)}>
+                Forgot Password?
+              </Typography>
+
+              <Dialog open={forgotOpen} onClose={() => setForgotOpen(false)} maxWidth="xs" fullWidth>
+                <DialogTitle>
+                  {step === 1 ? 'Forgot Password' : step === 2 ? 'Confirm Reset Link' : 'Reset Password'}
+                </DialogTitle>
+
+                <DialogContent dividers>
+                  {message && <Alert severity="info" sx={{ mb: 2 }}>{message}</Alert>}
+                  {step === 1 && (
+                    <TextField
+                      label="Enter your email"
+                      fullWidth
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  )}
+                  {step === 2 && (
+                    <TextField
+                      label="Enter Token (from email)"
+                      fullWidth
+                      value={resetToken}
+                      onChange={(e) => setResetToken(e.target.value)}
+                    />
+                  )}
+                  {step === 3 && tokenConfirmed && (
+                    <>
+                      <TextField
+                        label="New Password"
+                        type="password"
+                        fullWidth
+                        sx={{ mt: 1 }}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                      <TextField
+                        label="Re-enter Password"
+                        type="password"
+                        fullWidth
+                        sx={{ mt: 2 }}
+                        value={rePassword}
+                        onChange={(e) => setRePassword(e.target.value)}
+                      />
+                    </>
+                  )}
+                </DialogContent>
+
+                <DialogActions>
+                  {step === 1 && (
+                    <Button onClick={handleForgot} variant="contained" color="primary">Send Link</Button>
+                  )}
+                  {step === 2 && (
+                    <Button onClick={handleConfirm} variant="contained" color="warning">Confirm</Button>
+                  )}
+                  {step === 3 && (
+                    <Button onClick={handleReset} variant="contained" color="success">Reset Password</Button>
+                  )}
+                </DialogActions>
+              </Dialog>
               <Typography variant="body2" sx={{ mt: 1 }}>
                 Don’t have an account?{' '}
                 <Link href="/signup" underline="hover" sx={{ fontWeight: 'bold', color: '#bf360c' }}>
