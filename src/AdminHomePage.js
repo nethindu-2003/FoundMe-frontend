@@ -89,6 +89,8 @@ const AdminHomePage = () => {
   const [timeFilter, setTimeFilter] = useState('monthly');
   const [selectedUser, setSelectedUser] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [aiMatches, setAiMatches] = useState([]);
+  const [matchLoading, setMatchLoading] = useState(false);
 
   const userRef = useRef(null);
   const lostRef = useRef(null);
@@ -104,6 +106,7 @@ const AdminHomePage = () => {
   useEffect(() => {
     fetchData();
     fetchUsers();
+    fetchSuggestedMatches();
   }, []);
 
   const fetchData = async () => {
@@ -125,6 +128,18 @@ const AdminHomePage = () => {
     axios.get('http://localhost:3001/api/users')
       .then(res => setUsers(res.data))
       .catch(() => setError('Unable to fetch user data. Please check your connection.'));
+  };
+
+  const fetchSuggestedMatches = async () => {
+    setMatchLoading(true);
+    try {
+      const res = await axios.get('http://localhost:3001/api/matches/suggested-matches');
+      setAiMatches(res.data.matches);
+    } catch (err) {
+      console.error("Error fetching matches:", err);
+    } finally {
+      setMatchLoading(false);
+    }
   };
 
   const handleDelete = (id, collection) => {
@@ -339,7 +354,22 @@ const NavButton = styled(Button)(({ theme }) => ({
     console.error('Failed to fetch user profile:', err);
     alert('Failed to load user details.');
   }
+  };
+
+  const handleApproveMatch = async (lostItemId, foundItemId) => {
+  try {
+    const res = await axios.post('http://localhost:3001/api/match/approve', {
+      lostItemId,
+      foundItemId,
+    });
+
+    alert(res.data.message); // You can also use a snackbar
+  } catch (err) {
+    console.error('Approval failed:', err);
+    alert('Failed to approve match');
+  }
 };
+
 
   return (
     <GradientWrapper>
@@ -383,6 +413,7 @@ const NavButton = styled(Button)(({ theme }) => ({
             {error}
           </Typography>
         )}
+
         <Box ref={analyticsRef}>
         <SectionCard>
         <Container sx={{ py: 6 }}>

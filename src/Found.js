@@ -68,6 +68,12 @@ const Found = () => {
       alert('Phone number must be exactly 10 digits.');
       return;
     }
+    const selectedDate = new Date(founddatetime);
+    const now = new Date();
+    if (selectedDate > now) {
+      alert('Found date and time cannot be in the future.');
+      return;
+    }
 
     if (loading) return;
     setLoading(true);

@@ -73,8 +73,16 @@ const Lost = () => {
       return;
     }
 
+    const selectedDate = new Date(lostdatetime);
+    const now = new Date();
+    if (selectedDate > now) {
+      alert('Found date and time cannot be in the future.');
+      return;
+    }
+
     if (loading) return;
     setLoading(true);
+
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user || !user.email) {
       console.error("User not found or invalid in localStorage");
